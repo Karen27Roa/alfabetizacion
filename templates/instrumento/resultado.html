@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Mi resultado{% endblock %}
+{% block contenido %}
+<section class="heroe {{ intento.nivel }}">
+  <div class="anillo" data-score="{{ intento.puntaje_total }}" role="img" aria-label="Puntaje {{ intento.puntaje_total }} de 90">
+    <svg viewBox="0 0 200 200" aria-hidden="true"><circle class="pista-a" cx="100" cy="100" r="90"/><circle class="valor-a" cx="100" cy="100" r="90"/></svg>
+    <div class="centro"><b data-count="{{ intento.puntaje_total }}">{{ intento.puntaje_total }}</b><small>de 90 puntos</small></div>
+  </div>
+
+  <div>
+    <span class="etiqueta grande {{ intento.nivel }}">Riesgo {{ intento.get_nivel_display|lower }}</span>
+    <h1>{% if intento.nivel == 'bajo' %}Tus hábitos al informarte son sólidos.{% elif intento.nivel == 'medio' %}Hay hábitos que puedes afinar.{% else %}Es buen momento para reforzar tus hábitos.{% endif %}</h1>
+    <div class="mensaje">
+      <img src="{% static 'app/img/buho_cara.webp' %}" alt="">
+      <p>{{ intento.recomendacion }}</p>
+    </div>
+
+    <div class="termometro" data-score="{{ intento.puntaje_total }}" data-bajo="{{ intento.config.bajo_max }}" data-medio="{{ intento.config.medio_max }}">
+      <div class="riel"><div class="tramos"><i></i><i></i><i></i></div><span class="tu" aria-hidden="true"></span></div>
+      <div class="limites">
+        <span>Bajo · 18–{{ intento.config.bajo_max }}</span>
+        <span>Medio · {{ intento.config.bajo_max|add:1 }}–{{ intento.config.medio_max }}</span>
+        <span class="text-end">Alto · {{ intento.config.medio_max|add:1 }}–90</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="panel mt-4">
+  <h2>Cómo te fue en cada hábito</h2>
+  {% for f in semaforo %}
+  <div class="fila-var">
+    <div class="nombre">{{ f.variable.nombre }}<small>{{ f.variable.codigo }}</small></div>
+    <div class="riel"><div class="relleno {{ f.color }}" style="width:{% widthratio f.promedio 5 100 %}%"></div></div>
+    <div class="cifra">{{ f.promedio|floatformat:1 }}</div>
+  </div>
+  {% endfor %}
+  <p class="small text-secondary mt-3 mb-0">Cada barra es tu promedio de 1 a 5: entre más corta, mejor. Este resultado es una orientación para tu formación, no una etiqueta sobre ti.</p>
+</section>
+
+<div class="d-flex flex-wrap gap-3 mt-4">
+  <a class="boton grande" href="{% url 'instrumento:cuestionario' %}">Repetir el diagnóstico</a>
+  <a class="boton claro grande" href="{% url 'instrumento:historial' %}">Ver mi historial</a>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Diagnóstico{% endblock %}
+{% block contenido %}
+{% if secciones %}
+<section class="saludo">
+  <span class="lupa-fondo" aria-hidden="true"></span>
+  <h1>Hola, {{ user.first_name|default:user.username }}. Empecemos.</h1>
+  <p>Lee cada afirmación y elige qué tan seguido te pasa. No hay respuestas buenas ni malas, y toma menos de 10 minutos.</p>
+  <div class="leyenda"><span><b>1</b>Nunca</span><span><b>2</b>Casi nunca</span><span><b>3</b>A veces</span><span><b>4</b>Casi siempre</span><span><b>5</b>Siempre</span></div>
+  <img class="buho" src="{% static 'app/img/buho_cara.webp' %}" alt="">
+</section>
+
+<div class="progreso" id="progreso" role="progressbar" aria-valuemin="0" aria-valuemax="18" aria-valuenow="0" aria-label="Preguntas respondidas">
+  <div class="pista">
+    <div class="relleno" id="relleno"></div>
+    <img class="marcador" id="marcador" src="{% static 'app/img/buho_cara.webp' %}" alt="">
+  </div>
+  <div class="progreso-texto"><span id="textoParte">Parte 1 de {{ secciones|length }}</span><span><b id="contador">0</b> de 18 respondidas</span></div>
+</div>
+
+<form method="post" id="formulario" novalidate data-total="18">{% csrf_token %}
+  {% for seccion in secciones %}
+  <section class="paso">
+    <h2 class="paso-titulo">Parte {{ forloop.counter }} de {{ secciones|length }}</h2>
+
+    {% if forloop.first %}
+    <div class="pregunta semestre {% if form.semestre.errors %}falta{% endif %}" data-requerido>
+      <label class="form-label" for="{{ form.semestre.id_for_label }}">{{ form.semestre.label }}</label>
+      {{ form.semestre }}
+      {% for e in form.semestre.errors %}<div class="campo-error">{{ e }}</div>{% endfor %}
+    </div>
+    {% endif %}
+
+    {% for item in seccion %}
+    <div class="pregunta {% if item.campo.errors %}falta{% endif %}" data-requerido>
+      <div class="num"><span>{{ item.numero }}</span></div>
+      <p class="texto" id="texto-{{ item.numero }}">{{ item.pregunta.texto }}</p>
+      <div class="escala" role="radiogroup" aria-labelledby="texto-{{ item.numero }}">
+        {% for radio in item.campo %}
+          <input type="radio" class="respuesta" name="{{ radio.data.name }}" id="{{ radio.id_for_label }}" value="{{ radio.data.value }}" {% if radio.data.selected %}checked{% endif %}>
+          <label class="ficha" for="{{ radio.id_for_label }}"><b>{{ radio.data.value }}</b><small>{{ radio.choice_label }}</small></label>
+        {% endfor %}
+      </div>
+      {% for e in item.campo.errors %}<div class="campo-error mt-2">{{ e }}</div>{% endfor %}
+    </div>
+    {% endfor %}
+  </section>
+  {% endfor %}
+
+  <div class="acciones">
+    <button type="button" class="boton claro" id="atras" hidden>Atrás</button>
+    <span class="flex-grow-1"></span>
+    <button type="button" class="boton" id="siguiente" hidden>Siguiente</button>
+    <button type="submit" class="boton verde grande" id="enviar">Enviar y ver mi resultado</button>
+  </div>
+</form>
+{% endif %}
+{% endblock %}

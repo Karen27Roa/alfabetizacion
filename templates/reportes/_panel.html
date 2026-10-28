@@ -1,0 +1,78 @@
+{% load static %}
+{% if total_intentos == 0 %}
+  <div class="panel vacio">
+    <img src="{% static 'app/img/buho_cara.webp' %}" alt="">
+    <h2>No hay resultados con este filtro</h2>
+    <p class="text-secondary mb-0">Prueba con otro semestre o quita la búsqueda.</p>
+  </div>
+{% else %}
+  {% if muestra_pequena %}
+    <div class="alert aviso alert-warning">Muestra pequeña: solo {{ total_estudiantes }} estudiante{{ total_estudiantes|pluralize }}.
+      Estos resultados no permiten conclusiones sólidas y no deben usarse para etiquetar a nadie.</div>
+  {% endif %}
+
+  <div class="kpis">
+    <div class="kpi"><b data-count="{{ total_estudiantes }}">{{ total_estudiantes }}</b><span>Estudiantes</span></div>
+    <div class="kpi"><b data-count="{{ total_intentos }}">{{ total_intentos }}</b><span>Intentos</span></div>
+    <div class="kpi nv bajo"><b data-count="{{ distribucion.bajo }}">{{ distribucion.bajo }}</b><span>Riesgo bajo</span></div>
+    <div class="kpi nv medio"><b data-count="{{ distribucion.medio }}">{{ distribucion.medio }}</b><span>Riesgo medio</span></div>
+    <div class="kpi nv alto"><b data-count="{{ distribucion.alto }}">{{ distribucion.alto }}</b><span>Riesgo alto</span></div>
+  </div>
+
+  <div class="rejilla-graf">
+    <section class="panel"><h2>Distribución del riesgo</h2><div class="lienzo"><canvas id="graficoDona" aria-label="Gráfico circular de niveles de riesgo" role="img"></canvas></div></section>
+    <section class="panel"><h2>Niveles por semestre</h2><div class="lienzo"><canvas id="graficoBarras" aria-label="Gráfico de barras de niveles por semestre" role="img"></canvas></div></section>
+  </div>
+
+  <section class="panel mb-4">
+    <h2>Semáforo por hábito</h2>
+    {% for v in variables %}
+    <div class="fila-var">
+      <div class="nombre">{{ v.nombre }}<small>{{ v.codigo }}</small></div>
+      <div class="riel"><div class="relleno {{ v.color }}" style="width:{% widthratio v.promedio 5 100 %}%"></div></div>
+      <div class="cifra">{{ v.promedio|floatformat:2 }}</div>
+    </div>
+    {% endfor %}
+    <p class="small text-secondary mt-3 mb-0">Promedio de 1 a 5 del grupo filtrado. Verde: hábito sólido. Rojo: necesita refuerzo.</p>
+  </section>
+
+  <section class="panel">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+      <h2 class="mb-0">Últimos intentos</h2>
+      <a class="boton verde chico" href="{% url 'reportes:excel' %}?{{ querystring }}">Exportar a Excel</a>
+    </div>
+    <div class="table-responsive">
+    <table class="tabla">
+      <thead><tr><th>Estudiante</th><th>Semestre</th><th>Puntaje</th><th>Nivel</th><th>Fecha</th></tr></thead>
+      <tbody>{% for i in recientes %}
+        <tr><td>{{ i.usuario.get_full_name|default:i.usuario.username }}</td><td>{{ i.semestre }}</td><td><strong>{{ i.puntaje_total }}</strong></td>
+            <td><span class="etiqueta {{ i.nivel }}">{{ i.get_nivel_display }}</span></td><td>{{ i.fecha|date:"d/m/Y H:i" }}</td></tr>
+      {% endfor %}</tbody>
+    </table>
+    </div>
+  </section>
+
+  {{ graficos|json_script:"datos-graficos" }}
+  <script>
+  (function () {
+    const d = JSON.parse(document.getElementById('datos-graficos').textContent);
+    Chart.defaults.font.family = 'Figtree, "Segoe UI", sans-serif';
+    Chart.defaults.font.weight = 600; Chart.defaults.color = '#5A648F';
+    window._graficos = window._graficos || {};
+    for (const k in window._graficos) { window._graficos[k].destroy(); }
+    window._graficos.dona = new Chart(document.getElementById('graficoDona'), {
+      type: 'doughnut',
+      data: { labels: d.dona.labels, datasets: [{ data: d.dona.data, backgroundColor: d.dona.colors, borderWidth: 4, borderColor: '#fff', hoverOffset: 10 }] },
+      options: { maintainAspectRatio: false, cutout: '66%', animation: { animateRotate: true, duration: 1400, easing: 'easeOutQuart' },
+                 plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 16 } } } }
+    });
+    window._graficos.barras = new Chart(document.getElementById('graficoBarras'), {
+      type: 'bar',
+      data: { labels: d.barras.labels, datasets: d.barras.series.map(s => ({ label: s.label, data: s.data, backgroundColor: s.color, borderRadius: 8, borderSkipped: false })) },
+      options: { maintainAspectRatio: false, animation: { duration: 1200, easing: 'easeOutBack' },
+                 plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 16 } } },
+                 scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#E9EEFB' } } } }
+    });
+  })();
+  </script>
+{% endif %}

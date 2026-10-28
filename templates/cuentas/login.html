@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block titulo %}Ingresar{% endblock %}
+{% block contenido %}
+<div class="acceso">
+  <div class="escena">{% include "_escenario.html" %}</div>
+  <div class="panel tarjeta">
+    <h1>Ingresa a tu cuenta</h1>
+    <p class="lema">Un diagnóstico corto para conocer cómo consumes y compartes información.</p>
+    {% if form.non_field_errors %}<div class="alert aviso alert-danger">{{ form.non_field_errors.0 }}</div>{% endif %}
+    <form method="post">{% csrf_token %}
+      {% for f in form %}{% include "_campo.html" with campo=f %}{% endfor %}
+      <input type="hidden" name="next" value="{{ next }}">
+      <button class="boton ancho grande mt-2">Entrar</button>
+    </form>
+    <p class="mt-4 mb-0 text-center">¿Eres estudiante y aún no tienes cuenta? <a class="fw-bold" href="{% url 'cuentas:registro' %}">Crea tu cuenta</a></p>
+  </div>
+</div>
+{% endblock %}

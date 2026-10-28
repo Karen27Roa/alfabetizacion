@@ -1,0 +1,63 @@
+{% load static %}<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Búho guía{% endblock %} · Alfabetización mediática</title>
+  <link rel="icon" type="image/webp" href="{% static 'app/img/buho_cara.webp' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{% static 'app/css/app.css' %}" rel="stylesheet">
+  <script>document.documentElement.classList.add('js');</script>
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.3/dist/htmx.min.js"></script>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+<div class="fondo" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<nav class="navbar navbar-expand-md barra">
+  <div class="container">
+    <a class="marca" href="{% url 'home' %}">
+      <span class="sello"><img src="{% static 'app/img/buho_cara.webp' %}" alt=""></span>
+      Búho guía
+    </a>
+    {% if user.is_authenticated %}
+    <button class="navbar-toggler border-0" data-bs-toggle="collapse" data-bs-target="#menu" aria-label="Abrir menú"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="menu">
+      <ul class="navbar-nav me-auto ms-md-4 gap-1">
+        {% if rol == 'estudiante' %}
+          <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'cuestionario' %}activo{% endif %}" href="{% url 'instrumento:cuestionario' %}">Diagnóstico</a></li>
+          <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'historial' %}activo{% endif %}" href="{% url 'instrumento:historial' %}">Mis resultados</a></li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link {% if request.resolver_match.app_name == 'reportes' %}activo{% endif %}" href="{% url 'reportes:dashboard' %}">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'admin:index' %}">Administración</a></li>
+        {% endif %}
+      </ul>
+      <form method="post" action="{% url 'cuentas:logout' %}" class="usuario py-2 py-md-0">
+        {% csrf_token %}
+        <span class="avatar" aria-hidden="true">{{ user.first_name|default:user.username|slice:":1"|upper }}</span>
+        <small class="d-none d-lg-inline">{{ user.get_full_name|default:user.username }}</small>
+        <button class="boton claro chico">Salir</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</nav>
+
+<main class="container py-4">
+  {% for m in messages %}
+    <div class="alert aviso alert-{% if m.tags == 'error' %}danger{% else %}{{ m.tags|default:'info' }}{% endif %} alert-dismissible fade show" role="alert">
+      {{ m }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+  {% endfor %}
+  {% block contenido %}{% endblock %}
+</main>
+<p class="pie">Proyecto de grado · Alfabetización mediática crítica en educación superior</p>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'app/js/app.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

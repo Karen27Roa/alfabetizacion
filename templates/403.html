@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block titulo %}Acceso no permitido{% endblock %}
+{% block contenido %}
+<div class="pagina-error">
+  {% include "_escenario.html" %}
+  <div class="codigo">403</div>
+  <h1 class="h2">Acceso no permitido</h1>
+  <p class="text-secondary mb-2">Esta sección es solo para otro tipo de cuenta. Si crees que es un error, avisa al administrador.</p>
+  <a class="boton marino" href="{% url 'home' %}">Volver al inicio</a>
+</div>
+{% endblock %}

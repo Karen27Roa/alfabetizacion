@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Mis resultados{% endblock %}
+{% block contenido %}
+<h1 class="mb-4">Mis resultados</h1>
+{% if intentos %}
+<div class="panel">
+  <div class="table-responsive">
+  <table class="tabla">
+    <thead><tr><th>Fecha</th><th>Semestre</th><th>Puntaje</th><th>Nivel</th><th></th></tr></thead>
+    <tbody>
+    {% for i in intentos %}
+      <tr><td>{{ i.fecha|date:"d/m/Y H:i" }}</td><td>{{ i.semestre }}</td><td><strong>{{ i.puntaje_total }}</strong> / 90</td>
+          <td><span class="etiqueta {{ i.nivel }}">{{ i.get_nivel_display }}</span></td>
+          <td class="text-end"><a class="boton claro chico" href="{% url 'instrumento:resultado' i.pk %}">Ver detalle</a></td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% else %}
+<div class="panel vacio">
+  <img src="{% static 'app/img/buho_cara.webp' %}" alt="">
+  <h2>Todavía no has respondido el diagnóstico</h2>
+  <p class="text-secondary">Son 18 afirmaciones y toma menos de 10 minutos.</p>
+</div>
+{% endif %}
+<a class="boton grande mt-4" href="{% url 'instrumento:cuestionario' %}">Responder el diagnóstico</a>
+{% endblock %}

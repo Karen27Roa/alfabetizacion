@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Dashboard{% endblock %}
+{% block extra_head %}<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>{% endblock %}
+{% block contenido %}
+<section class="cabecera-panel">
+  <h1>Hola, {{ user.first_name|default:user.username }}</h1>
+  <p>Así van los hábitos de información de tus estudiantes. Filtra por semestre o busca a una persona.</p>
+  <img class="buho" src="{% static 'app/img/buho_cara.webp' %}" alt="">
+</section>
+
+<form method="get" class="panel filtros"
+      hx-get="{% url 'reportes:dashboard' %}" hx-target="#panel" hx-trigger="change, input delay:400ms from:#q" hx-push-url="true">
+  <div><label class="form-label" for="semestre">Semestre</label>
+    <select name="semestre" id="semestre" class="form-select">
+      <option value="">Todos</option>
+      {% for valor, etiqueta in semestres %}<option value="{{ valor }}" {% if valor == semestre %}selected{% endif %}>{{ etiqueta }}</option>{% endfor %}
+    </select></div>
+  <div><label class="form-label" for="q">Buscar estudiante</label>
+    <input type="search" name="q" id="q" value="{{ q }}" class="form-control" placeholder="Nombre o usuario" autocomplete="off"></div>
+  <button class="boton marino">Filtrar</button>
+</form>
+
+<div id="panel">{% include "reportes/_panel.html" %}</div>
+{% endblock %}

@@ -1,0 +1,6 @@
+<div class="mb-3">
+  <label class="form-label" for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+  {{ campo }}
+  {% for e in campo.errors %}<div class="campo-error">{{ e }}</div>{% endfor %}
+  {% if campo.help_text and not campo.errors %}<div class="form-text small">{{ campo.help_text|safe }}</div>{% endif %}
+</div>

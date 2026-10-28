@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block titulo %}El búho no encontró esa página{% endblock %}
+{% block contenido %}
+<div class="pagina-error">
+  {% include "_escenario.html" %}
+  <div class="codigo">404</div>
+  <h1 class="h2">El búho no encontró esa página</h1>
+  <p class="text-secondary mb-2">El enlace no existe o el resultado no es tuyo. Volvamos al inicio.</p>
+  <a class="boton marino" href="{% url 'home' %}">Volver al inicio</a>
+</div>
+{% endblock %}
