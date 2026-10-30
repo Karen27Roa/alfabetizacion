@@ -114,3 +114,80 @@ def test_cambio_de_rangos_no_altera_intentos_previos(client, estudiante):
     viejo.refresh_from_db()
     assert viejo.nivel == "medio" and viejo.config.version == 1
     assert nuevo.nivel == "medio" and nuevo.config.version == 2
+
+
+def test_toggle_password_presente_en_login_y_registro(client, db):
+    r_login = client.get(reverse("cuentas:login"))
+    assert r_login.status_code == 200
+    contenido_login = r_login.content.decode()
+    assert 'class="input-group"' in contenido_login
+    assert 'btn-toggle-password' in contenido_login
+    assert 'icono-ojo-abierto' in contenido_login
+    assert 'icono-ojo-tachado' in contenido_login
+
+    r_reg = client.get(reverse("cuentas:registro"))
+    assert r_reg.status_code == 200
+    contenido_reg = r_reg.content.decode()
+    assert 'class="input-group"' in contenido_reg
+    # Debe tener botones para password1 y password2
+    assert contenido_reg.count('btn-toggle-password" type="button"') == 2
+    assert 'icono-ojo-abierto' in contenido_reg
+    assert 'icono-ojo-tachado' in contenido_reg
+
+
+def test_enlace_olvido_contrasena_en_login(client, db):
+    r = client.get(reverse("cuentas:login"))
+    assert r.status_code == 200
+    contenido = r.content.decode()
+    assert "¿Olvidaste tu contraseña?" in contenido
+    assert reverse("cuentas:password_reset") in contenido
+
+
+def test_flujo_recuperar_contrasena(client, db):
+    from django.contrib.auth.tokens import default_token_generator
+    from django.utils.encoding import force_bytes
+    from django.utils.http import urlsafe_base64_encode
+
+    u = User.objects.create_user("carlos", email="carlos@uni.edu.co", password="Vieja-Clave-123")
+    
+    # 1. Página para pedir el correo
+    r_form = client.get(reverse("cuentas:password_reset"))
+    assert r_form.status_code == 200
+    assert 'name="email"' in r_form.content.decode()
+
+    # 2. Envío del correo y redirección a confirmación
+    r_post = client.post(reverse("cuentas:password_reset"), {"email": "carlos@uni.edu.co"})
+    assert r_post.status_code == 302
+    assert r_post.url == reverse("cuentas:password_reset_done")
+    r_done = client.get(reverse("cuentas:password_reset_done"))
+    assert r_done.status_code == 200
+    assert "Revisa tu correo" in r_done.content.decode()
+
+    # 3. Vista de confirmación con token válido
+    uid = urlsafe_base64_encode(force_bytes(u.pk))
+    token = default_token_generator.make_token(u)
+    r_confirm = client.get(reverse("cuentas:password_reset_confirm", kwargs={"uidb64": uid, "token": token}), follow=True)
+    assert r_confirm.status_code == 200
+    assert "Crea tu nueva contraseña" in r_confirm.content.decode()
+    assert "btn-toggle-password" in r_confirm.content.decode()
+
+    # 4. Establecer la nueva contraseña
+    post_url = r_confirm.redirect_chain[0][0]
+    r_change = client.post(post_url, {
+        "new_password1": "Nueva-Segura-456",
+        "new_password2": "Nueva-Segura-456",
+    }, follow=True)
+    assert r_change.status_code == 200
+    assert "Contraseña restablecida" in r_change.content.decode()
+
+    # 5. Comprobar que la contraseña se actualizó en la base de datos y permite iniciar sesión
+    u.refresh_from_db()
+    assert u.check_password("Nueva-Segura-456")
+    login_ok = client.login(username="carlos", password="Nueva-Segura-456")
+    assert login_ok
+
+    # 6. Enlace con token inválido o expirado
+    r_invalido = client.get(reverse("cuentas:password_reset_confirm", kwargs={"uidb64": uid, "token": "token-invalido"}), follow=True)
+    assert "Enlace no válido" in r_invalido.content.decode()
+
+

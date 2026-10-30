@@ -11,8 +11,15 @@
       {% for f in form %}{% include "_campo.html" with campo=f %}{% endfor %}
       <input type="hidden" name="next" value="{{ next }}">
       <button class="boton ancho grande mt-2">Entrar</button>
+      <div class="text-center mt-3">
+        <a class="olvido-clave text-decoration-none fw-semibold" href="{% url 'cuentas:password_reset' %}">¿Olvidaste tu contraseña?</a>
+      </div>
     </form>
     <p class="mt-4 mb-0 text-center">¿Eres estudiante y aún no tienes cuenta? <a class="fw-bold" href="{% url 'cuentas:registro' %}">Crea tu cuenta</a></p>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{% include "cuentas/_toggle_password_script.html" %}
 {% endblock %}

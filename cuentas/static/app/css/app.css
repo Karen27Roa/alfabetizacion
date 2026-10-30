@@ -65,6 +65,74 @@ a{ color:var(--n6); }
 .form-control:focus,.form-select:focus{ border-color:var(--n6); box-shadow:0 0 0 .25rem rgba(245,165,36,.35); }
 .form-label{ font-weight:700; color:var(--n8); margin-bottom:.3rem; }
 .campo-error{ color:var(--rojo-d); font-size:.9rem; font-weight:600; margin-top:.3rem; }
+
+/* ---------- Input group con botón ojito de contraseña ---------- */
+.input-group > .form-control:not(:last-child) {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border-top-left-radius: 14px;
+  border-bottom-left-radius: 14px;
+}
+.input-group > .btn-toggle-password {
+  border: 2px solid var(--linea);
+  border-left: 0;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-top-right-radius: 14px !important;
+  border-bottom-right-radius: 14px !important;
+  background-color: #fff;
+  color: var(--suave);
+  padding: .7rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color .15s ease, background-color .15s ease, border-color .15s ease;
+  z-index: 3;
+}
+.input-group > .btn-toggle-password:hover {
+  background-color: var(--cielo);
+  color: var(--n7);
+  border-color: var(--linea);
+}
+.input-group > .btn-toggle-password:focus-visible,
+.input-group > .btn-toggle-password:focus {
+  outline: 0;
+  border-color: var(--n6);
+  color: var(--n7);
+  box-shadow: 0 0 0 .25rem rgba(245,165,36,.35);
+  z-index: 5;
+}
+.input-group > .btn-toggle-password .icono-ojo {
+  pointer-events: none;
+  transition: transform .15s ease;
+}
+.input-group > .btn-toggle-password:hover .icono-ojo {
+  transform: scale(1.1);
+}
+.input-group > .form-control:focus {
+  z-index: 4;
+}
+.input-group > .form-control:focus + .btn-toggle-password {
+  border-color: var(--n6);
+}
+
+.olvido-clave {
+  color: var(--suave);
+  display: inline-block;
+  transition: color .2s;
+  font-size: .95rem;
+}
+.olvido-clave:hover {
+  color: var(--n7);
+  text-decoration: underline;
+}
+
+.icono-estado {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+
 .aviso{ border:0; border-radius:18px; font-weight:600; box-shadow:var(--sombra); }
 .alert-danger.aviso{ background:var(--rojo-l); color:var(--rojo-d); }
 .alert-success.aviso{ background:var(--verde-l); color:var(--verde-d); }

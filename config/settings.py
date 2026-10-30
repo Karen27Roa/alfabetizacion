@@ -84,6 +84,10 @@ LOGIN_URL = "cuentas:login"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "cuentas:login"
 
+# Correo en consola para desarrollo y pruebas locales
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "Búho guía <no-reply@buhoguia.edu.co>"
+
 # Dominios de correo permitidos para registrarse (vacío = cualquiera). Ej: ["universidad.edu.co"]
 DOMINIOS_PERMITIDOS = []
 # Menos estudiantes que esto => el dashboard avisa que la muestra es pequeña

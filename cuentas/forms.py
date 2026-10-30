@@ -1,9 +1,33 @@
 from django import forms
 from django.conf import settings
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import (
+    AuthenticationForm,
+    PasswordResetForm,
+    SetPasswordForm,
+    UserCreationForm,
+)
 from django.contrib.auth.models import User
 
 from .models import Perfil, Rol
+
+
+class RecuperarPasswordForm(PasswordResetForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["email"].label = "Correo electrónico"
+        for f in self.fields.values():
+            f.widget.attrs["class"] = "form-control"
+            f.widget.attrs["placeholder"] = "tu.correo@ejemplo.com"
+
+
+class NuevaPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["new_password1"].label = "Nueva contraseña"
+        self.fields["new_password2"].label = "Confirma la nueva contraseña"
+        for f in self.fields.values():
+            f.widget.attrs["class"] = "form-control"
+
 
 
 class LoginForm(AuthenticationForm):
