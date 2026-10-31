@@ -20,6 +20,8 @@
   {% else %}
     {{ campo }}
   {% endif %}
-  {% for e in campo.errors %}<div class="campo-error">{{ e }}</div>{% endfor %}
+  {% for e in campo.errors %}
+    <div class="invalid-feedback d-block">{{ e }}</div>
+  {% endfor %}
   {% if campo.help_text and not campo.errors %}<div class="form-text small">{{ campo.help_text|safe }}</div>{% endif %}
 </div>

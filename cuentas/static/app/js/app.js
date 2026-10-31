@@ -124,4 +124,16 @@
       }
     });
   });
+
+  /* ---- Limpieza reactiva de campos con error al escribir ---- */
+  document.addEventListener('input', (e) => {
+    if (e.target.classList && e.target.classList.contains('is-invalid')) {
+      e.target.classList.remove('is-invalid');
+      const mb = e.target.closest('.mb-3');
+      if (mb) {
+        mb.querySelectorAll('.invalid-feedback').forEach((el) => { el.style.display = 'none'; });
+      }
+    }
+  });
 })();
+

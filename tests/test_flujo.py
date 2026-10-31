@@ -191,3 +191,55 @@ def test_flujo_recuperar_contrasena(client, db):
     assert "Enlace no válido" in r_invalido.content.decode()
 
 
+def test_errores_y_validaciones_en_formularios(client, db):
+    # 1. Login vacío
+    r_login = client.post(reverse("cuentas:login"), {"username": "", "password": ""})
+    assert r_login.status_code == 200
+    html_login = r_login.content.decode()
+    assert "is-invalid" in html_login
+    assert "invalid-feedback" in html_login
+    assert "Por favor, ingresa tu nombre de usuario." in html_login
+    assert "Por favor, ingresa tu contraseña." in html_login
+    assert "No se pudo iniciar sesión" in html_login
+    assert "alert-danger" in html_login
+
+    # 2. Registro con datos inválidos
+    r_reg = client.post(reverse("cuentas:registro"), {
+        "username": "", "first_name": "", "last_name": "", "email": "",
+        "password1": "123", "password2": "456",
+    })
+    assert r_reg.status_code == 200
+    html_reg = r_reg.content.decode()
+    assert "is-invalid" in html_reg
+    assert "invalid-feedback" in html_reg
+    assert "Por favor, ingresa tu correo institucional." in html_reg
+    assert "Por favor, ingresa tus nombres." in html_reg
+    assert "Por favor, ingresa tus apellidos." in html_reg
+    assert "Las contraseñas no coinciden" in html_reg
+    assert "alert-danger" in html_reg
+
+    # 3. Recuperar contraseña con email vacío
+    r_rec = client.post(reverse("cuentas:password_reset"), {"email": ""})
+    assert r_rec.status_code == 200
+    html_rec = r_rec.content.decode()
+    assert "is-invalid" in html_rec
+    assert "invalid-feedback" in html_rec
+    assert "Por favor, ingresa tu correo electrónico." in html_rec
+    assert "alert-danger" in html_rec
+
+
+def test_notificaciones_globales_base(client, db):
+    from django.contrib import messages
+    # Probamos la visualización en base.html mediante una petición que inyecta mensajes
+    r = client.get(reverse("cuentas:login"))
+    assert "mensajes-globales" not in r.content.decode()  # Sin mensajes no debe mostrar el contenedor
+
+    # Enviar login fallido para verificar alerta global con botón de cierre
+    r_fallo = client.post(reverse("cuentas:login"), {"username": "nadie", "password": "wrong"})
+    html = r_fallo.content.decode()
+    assert "mensajes-globales" in html
+    assert "alert-danger" in html
+    assert "btn-close" in html
+
+
+

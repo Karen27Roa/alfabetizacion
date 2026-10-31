@@ -1,14 +1,11 @@
 from django.contrib.auth.views import (
     LogoutView,
     PasswordResetCompleteView,
-    PasswordResetConfirmView,
     PasswordResetDoneView,
-    PasswordResetView,
 )
-from django.urls import path, reverse_lazy
+from django.urls import path
 
 from . import views
-from .forms import NuevaPasswordForm, RecuperarPasswordForm
 
 app_name = "cuentas"
 urlpatterns = [
@@ -17,13 +14,7 @@ urlpatterns = [
     path("registro/", views.registro, name="registro"),
     path(
         "recuperar/",
-        PasswordResetView.as_view(
-            template_name="cuentas/password_reset.html",
-            email_template_name="cuentas/password_reset_email.html",
-            subject_template_name="cuentas/password_reset_subject.txt",
-            success_url=reverse_lazy("cuentas:password_reset_done"),
-            form_class=RecuperarPasswordForm,
-        ),
+        views.RecuperarPassword.as_view(),
         name="password_reset",
     ),
     path(
@@ -35,11 +26,7 @@ urlpatterns = [
     ),
     path(
         "recuperar/<uidb64>/<token>/",
-        PasswordResetConfirmView.as_view(
-            template_name="cuentas/password_reset_confirm.html",
-            success_url=reverse_lazy("cuentas:password_reset_complete"),
-            form_class=NuevaPasswordForm,
-        ),
+        views.ConfirmarPassword.as_view(),
         name="password_reset_confirm",
     ),
     path(

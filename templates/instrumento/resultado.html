@@ -31,7 +31,7 @@
   <h2>Cómo te fue en cada hábito</h2>
   {% for f in semaforo %}
   <div class="fila-var">
-    <div class="nombre">{{ f.variable.nombre }}<small>{{ f.variable.codigo }}</small></div>
+    <div class="nombre">{{ f.variable.nombre }}</div>
     <div class="riel"><div class="relleno {{ f.color }}" style="width:{% widthratio f.promedio 5 100 %}%"></div></div>
     <div class="cifra">{{ f.promedio|floatformat:1 }}</div>
   </div>

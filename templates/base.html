@@ -47,11 +47,23 @@
 </nav>
 
 <main class="container py-4">
-  {% for m in messages %}
-    <div class="alert aviso alert-{% if m.tags == 'error' %}danger{% else %}{{ m.tags|default:'info' }}{% endif %} alert-dismissible fade show" role="alert">
-      {{ m }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+  {% if messages %}
+    <div class="mensajes-globales" id="mensajes-globales">
+      {% for m in messages %}
+        {% with tag=m.tags|default:'info' %}
+          <div class="alert alert-{% if 'error' in tag %}danger{% elif 'warning' in tag %}warning{% elif 'success' in tag %}success{% else %}info{% endif %} alert-dismissible fade show aviso d-flex align-items-center justify-content-between gap-3 shadow-sm mb-3" role="alert">
+            <div class="d-flex align-items-center gap-2">
+              <span class="alerta-icono" aria-hidden="true">
+                {% if 'error' in tag %}⚠️{% elif 'warning' in tag %}🔔{% elif 'success' in tag %}✅{% else %}ℹ️{% endif %}
+              </span>
+              <div class="alerta-texto">{{ m }}</div>
+            </div>
+            <button type="button" class="btn-close position-relative my-auto" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+          </div>
+        {% endwith %}
+      {% endfor %}
     </div>
-  {% endfor %}
+  {% endif %}
   {% block contenido %}{% endblock %}
 </main>
 <p class="pie">Proyecto de grado · Alfabetización mediática crítica en educación superior</p>

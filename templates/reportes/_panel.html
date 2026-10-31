@@ -28,7 +28,7 @@
     <h2>Semáforo por hábito</h2>
     {% for v in variables %}
     <div class="fila-var">
-      <div class="nombre">{{ v.nombre }}<small>{{ v.codigo }}</small></div>
+      <div class="nombre">{{ v.nombre }}</div>
       <div class="riel"><div class="relleno {{ v.color }}" style="width:{% widthratio v.promedio 5 100 %}%"></div></div>
       <div class="cifra">{{ v.promedio|floatformat:2 }}</div>
     </div>

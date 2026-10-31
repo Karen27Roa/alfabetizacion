@@ -132,12 +132,56 @@ a{ color:var(--n6); }
   line-height: 1;
 }
 
+/* ---------- Errores de validación y campos con error ---------- */
+.form-control.is-invalid, .form-select.is-invalid {
+  border-color: var(--rojo) !important;
+  background-image: none !important;
+}
+.form-control.is-invalid:focus, .form-select.is-invalid:focus {
+  border-color: var(--rojo-d) !important;
+  box-shadow: 0 0 0 .25rem rgba(229, 72, 77, .25) !important;
+}
+.input-group > .form-control.is-invalid + .btn-toggle-password {
+  border-color: var(--rojo) !important;
+}
+.input-group > .form-control.is-invalid:focus + .btn-toggle-password {
+  border-color: var(--rojo-d) !important;
+}
+.invalid-feedback {
+  color: var(--rojo-d);
+  font-size: .9rem;
+  font-weight: 600;
+  margin-top: .35rem;
+}
+
+/* ---------- Alertas y Notificaciones Globales ---------- */
+.mensajes-globales {
+  margin-bottom: 1.5rem;
+}
+.mensajes-globales .alert {
+  border-radius: 18px;
+  font-weight: 600;
+  border: 1.5px solid transparent;
+}
+.mensajes-globales .alerta-icono {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+.mensajes-globales .btn-close {
+  background-size: .8rem;
+  opacity: .75;
+  transition: opacity .2s;
+}
+.mensajes-globales .btn-close:hover {
+  opacity: 1;
+}
 
 .aviso{ border:0; border-radius:18px; font-weight:600; box-shadow:var(--sombra); }
-.alert-danger.aviso{ background:var(--rojo-l); color:var(--rojo-d); }
-.alert-success.aviso{ background:var(--verde-l); color:var(--verde-d); }
-.alert-info.aviso{ background:var(--cielo); color:var(--n7); }
-.alert-warning.aviso{ background:var(--amar-l); color:var(--amar-d); }
+.alert-danger.aviso{ background:var(--rojo-l); color:var(--rojo-d); border-color:#F8C6C8; }
+.alert-success.aviso{ background:var(--verde-l); color:var(--verde-d); border-color:#BEE3D2; }
+.alert-info.aviso{ background:var(--cielo); color:var(--n7); border-color:var(--linea); }
+.alert-warning.aviso{ background:var(--amar-l); color:var(--amar-d); border-color:#FCE6AD; }
+
 
 /* ---------- Escenario del búho (capas que flotan) ---------- */
 .escenario{ position:relative; width:100%; max-width:620px; aspect-ratio:1; margin-inline:auto; }
